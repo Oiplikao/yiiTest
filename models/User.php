@@ -2,62 +2,38 @@
 
 namespace app\models;
 
-use yii\db\ActiveRecord;
-
-/**
- * Class User
- *
- * @property int $id
- * @property string $fio
- * @property string $email
- * @property string $phone
- * @property string $password
- * @property string $date_create
- *
- */
-class User extends ActiveRecord implements \yii\web\IdentityInterface
+class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
 {
-    /**
-     *  {@inheritdoc}
-     */
-    public static function tableName()
-    {
-        return 'users';
-    }
+    public $id;
+    public $username;
+    public $password;
+    public $authKey;
+    public $accessToken;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['fio', 'email', 'phone', 'password'], 'required'],
-            [['date_create'], 'safe'],
-            [['fio', 'email', 'phone', 'password'], 'string', 'max' => 50],
-        ];
-    }
+    private static $users = [
+        '100' => [
+            'id' => '100',
+            'username' => 'admin',
+            'password' => 'admin',
+            'authKey' => 'test100key',
+            'accessToken' => '100-token',
+        ],
+        '101' => [
+            'id' => '101',
+            'username' => 'demo',
+            'password' => 'demo',
+            'authKey' => 'test101key',
+            'accessToken' => '101-token',
+        ],
+    ];
 
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
-    {
-        return [
-            'id' => 'ID',
-            'fio' => 'Fio',
-            'email' => 'Email',
-            'phone' => 'Phone',
-            'password' => 'Password',
-            'date_create' => 'Date Create',
-        ];
-    }
 
     /**
      * {@inheritdoc}
      */
     public static function findIdentity($id)
     {
-        return static::findOne($id);
+        return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
     }
 
     /**
@@ -65,29 +41,30 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
+        foreach (self::$users as $user) {
+            if ($user['accessToken'] === $token) {
+                return new static($user);
+            }
+        }
 
+        return null;
     }
 
     /**
-     * Finds user by email
+     * Finds user by username
      *
-     * @param string $email
+     * @param string $username
      * @return static|null
      */
-    public static function findByEmail($email)
+    public static function findByUsername($username)
     {
-        return static::findOne(['email' => $email]);
-    }
+        foreach (self::$users as $user) {
+            if (strcasecmp($user['username'], $username) === 0) {
+                return new static($user);
+            }
+        }
 
-    /**
-     * Finds user by phone
-     *
-     * @param string $phone
-     * @return static|null
-     */
-    public static function findByPhone($phone)
-    {
-        return static::findOne(['phone' => $phone]);
+        return null;
     }
 
     /**

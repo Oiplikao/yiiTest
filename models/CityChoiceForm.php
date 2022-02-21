@@ -4,42 +4,53 @@
 namespace app\models;
 
 
+use app\custom\cityFinder\CityFinderStub;
+
 class CityChoiceForm extends \yii\base\Model
 {
     public $cityName;
+    public $cityID;
+
+    const SCENARIO_FIND_BY_ID = 'id';
+    const SCENARIO_FIND_BY_NAME = 'name';
 
     public function rules()
     {
         return [
-            [['cityId'], 'required'],
-            [['cityId'], 'isRealCity']
+            [['cityID'], 'checkIfIDExistsInDB', 'on' => self::SCENARIO_FIND_BY_ID],
+            [['cityName'], 'confirmAndAddByName', 'on' => self::SCENARIO_FIND_BY_NAME]
         ];
     }
 
-    public function getCityFromIp()
+    public function confirmAndAddByName($attributeName)
     {
-        // todo: 3rd party maybe
-        return new City([
-            'id' => 2,
-            'name' => 'Ижевск'
-        ]);
-    }
-
-    public function isRealCity($cityName)
-    {
-        $city = City::findOne(['name' => $cityName]);
-        if($city)
-        {
-            return true;
+        /** @var City|null $city */
+        $name = $this->$attributeName;
+        $city = City::find()->where(['name' => $name])->one();
+        if(!$city) {
+            $cityFinder = new CityFinderStub();
+            $cityData = current($cityFinder->findCitiesByName($name, 1));
+            if($cityData)
+            {
+                $city = new City([
+                    'name' => $cityData->name
+                ]);
+                $city->save();
+            }
         }
-        //$city = 3rd party
-        //if $city return true
-        return false;
+        if(!$city) {
+            $this->addError($attributeName);
+            return;
+        }
+        $this->cityID = $city->id;
     }
 
-    public function save()
+    public function checkIfIDExistsInDB($attributeName)
     {
-        \Yii::$app->session->set('cityName', $this->cityName);
-        return true;
+        $city = City::findOne($this->$attributeName);
+        if(!$city)
+        {
+            $this->addError($attributeName);
+        }
     }
 }
