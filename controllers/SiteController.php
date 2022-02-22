@@ -145,7 +145,7 @@ class SiteController extends Controller
                 $form->scenario = $scenario;
                 if($form->load(Yii::$app->request->post(), '') && $form->validate()) {
                     Yii::$app->session->set('cityID', $form->cityID);
-                    return $this->redirect(['site/index']);
+                    return $this->redirect(['review/index-by-city']);
                 }
             }
         }
@@ -157,5 +157,10 @@ class SiteController extends Controller
             'models' => $models,
             'cityFromIP' => $cityFromIP
         ]);
+    }
+
+    public function actionTest()
+    {
+        echo xdebug_info();
     }
 }

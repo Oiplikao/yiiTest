@@ -53,6 +53,10 @@ $config = [
         */
     ],
     'params' => $params,
+    'on beforeRequest' => function($event) {
+        //В 'aliases' @web ещё не существует
+        Yii::setAlias('@upload', '@web/upload');
+    }
 ];
 
 if (YII_ENV_DEV) {

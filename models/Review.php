@@ -73,4 +73,13 @@ class Review extends \yii\db\ActiveRecord
     {
         return $this->hasOne(User::class, ['user_id' => 'id']);
     }
+
+    public function getImageLink()
+    {
+        if(!$this->img)
+        {
+            return null;
+        }
+        return Yii::getAlias('@upload') . '/' . $this->img;
+    }
 }
