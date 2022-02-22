@@ -2,38 +2,58 @@
 
 namespace app\models;
 
-class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
+use yii\base\NotSupportedException;
+use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
+
+/**
+ * Class User
+ * @property int $id
+ * @property string $fio
+ * @property string $email
+ * @property string $phone
+ * @property \DateTime $date_create
+ * @property string $password
+ */
+class User extends ActiveRecord implements \yii\web\IdentityInterface
 {
-    public $id;
-    public $username;
-    public $password;
-    public $authKey;
-    public $accessToken;
 
-    private static $users = [
-        '100' => [
-            'id' => '100',
-            'username' => 'admin',
-            'password' => 'admin',
-            'authKey' => 'test100key',
-            'accessToken' => '100-token',
-        ],
-        '101' => [
-            'id' => '101',
-            'username' => 'demo',
-            'password' => 'demo',
-            'authKey' => 'test101key',
-            'accessToken' => '101-token',
-        ],
-    ];
+    public static function tableName()
+    {
+        return 'users';
+    }
 
+    public function rules()
+    {
+        return [
+            [['name', 'email', 'phone', 'password'], 'required'],
+            [['date_create'], 'safe'],
+            [['password'], 'validatePassword'],
+            [['name', 'email', 'phone', 'password'], 'string', 'max' => 50],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'fio' => 'Fio',
+            'email' => 'Email',
+            'phone' => 'Phone',
+            'password' => 'Password',
+            'date_create' => 'Date Create',
+        ];
+    }
 
     /**
      * {@inheritdoc}
      */
     public static function findIdentity($id)
     {
-        return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
+        return static::findOne($id);
     }
 
     /**
@@ -41,30 +61,17 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        foreach (self::$users as $user) {
-            if ($user['accessToken'] === $token) {
-                return new static($user);
-            }
-        }
-
-        return null;
+        throw new NotSupportedException();
     }
 
     /**
-     * Finds user by username
-     *
-     * @param string $username
+     * @param $email
      * @return static|null
      */
-    public static function findByUsername($username)
+    public static function findByEmail($email)
     {
-        foreach (self::$users as $user) {
-            if (strcasecmp($user['username'], $username) === 0) {
-                return new static($user);
-            }
-        }
-
-        return null;
+        $user = static::findOne(['email' => $email]);
+        return $user;
     }
 
     /**
@@ -76,22 +83,6 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getAuthKey()
-    {
-        return $this->authKey;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function validateAuthKey($authKey)
-    {
-        return $this->authKey === $authKey;
-    }
-
-    /**
      * Validates password
      *
      * @param string $password password to validate
@@ -99,6 +90,21 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
      */
     public function validatePassword($password)
     {
-        return $this->password === $password;
+        return $this->password === $password; //Yii::$app->security->validatePassword($password, $this->password);
+    }
+
+    public function setPasswordSecure($password)
+    {
+        $this->password = \Yii::$app->security->generatePasswordHash($password);
+    }
+
+    public function getAuthKey()
+    {
+        //not used but required by interface
+    }
+
+    public function validateAuthKey($authKey)
+    {
+        //not used but required by interface
     }
 }
