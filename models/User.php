@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use Yii;
 use yii\base\NotSupportedException;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
@@ -26,10 +27,9 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
     public function rules()
     {
         return [
-            [['name', 'email', 'phone', 'password'], 'required'],
-            [['date_create'], 'safe'],
-            [['password'], 'validatePassword'],
-            [['name', 'email', 'phone', 'password'], 'string', 'max' => 50],
+            [['fio', 'email', 'phone', 'password'], 'required'],
+            [['fio', 'email', 'phone', 'password'], 'string', 'max' => 255],
+            ['password', 'validatePassword'],
         ];
     }
 
@@ -90,12 +90,12 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
      */
     public function validatePassword($password)
     {
-        return $this->password === $password; //Yii::$app->security->validatePassword($password, $this->password);
+        return Yii::$app->security->validatePassword($password, $this->password);
     }
 
     public function setPasswordSecure($password)
     {
-        $this->password = \Yii::$app->security->generatePasswordHash($password);
+        $this->password = Yii::$app->security->generatePasswordHash($password);
     }
 
     public function getAuthKey()
