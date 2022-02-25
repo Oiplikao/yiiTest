@@ -41,6 +41,7 @@ class ReviewController extends \yii\web\Controller
 
     public function actionIndexByCity()
     {
+        //todo cityID check can be moved to AccessControl
         $cityID = \Yii::$app->session->get('cityID');
         if(!$cityID)
         {
@@ -57,7 +58,7 @@ class ReviewController extends \yii\web\Controller
             $reviewsQuery = Review::find(); //all reviews
         } else {
             $type = self::VIEWTYPE_CITY;
-            $reviewsQuery = $city->getReviews();
+            $reviewsQuery = $city->getReviews()->with('user');
         }
         $provider = new ActiveDataProvider([
             'query' => $reviewsQuery,
@@ -75,7 +76,8 @@ class ReviewController extends \yii\web\Controller
             //TODO instead of types add booleans like "showUsername => true"
             'type' => $type,
             'provider' => $provider,
-            'city' => $city
+            'city' => $city,
+            'isGuest' => \Yii::$app->user->isGuest
         ]);
     }
 

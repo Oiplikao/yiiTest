@@ -14,8 +14,8 @@ use Yii;
  * @property resource|null $img
  * @property int $user_id
  * @property string $date_create
- *
  * @property City[] $cities
+ * @property User $user
  * @property Cities2review[] $cities2reviews
  */
 class Review extends \yii\db\ActiveRecord
@@ -72,7 +72,7 @@ class Review extends \yii\db\ActiveRecord
 
     public function getUser()
     {
-        return $this->hasOne(User::class, ['user_id' => 'id']);
+        return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
     public function getImageLink()
