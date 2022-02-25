@@ -70,6 +70,7 @@ class SignupForm extends \yii\base\Model
 
             ['phone', 'trim'],
             ['phone', 'required'],
+            ['phone', 'unique', 'targetClass' => User::class, 'message' => 'Этот номер уже используется'],
             //todo phone format verification
 
             ['captchaCode', 'required'],

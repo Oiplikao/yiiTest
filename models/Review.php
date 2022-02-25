@@ -34,12 +34,13 @@ class Review extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['title', 'text'], 'trim'],
             [['title', 'text', 'rating', 'user_id'], 'required'],
-            [['rating', 'user_id'], 'integer'],
-            [['img'], 'string'],
-            [['date_create'], 'safe'],
-            [['title'], 'string', 'max' => 100],
-            [['text'], 'string', 'max' => 255],
+            ['user_id', 'integer'],
+            ['title', 'string', 'max' => 100],
+            ['text', 'string', 'max' => 255],
+            ['rating', 'filter', 'filter' => 'intval'],
+            ['rating', 'integer', 'min' => 1, 'max' => 5],
         ];
     }
 

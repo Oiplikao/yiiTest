@@ -29,6 +29,8 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
         return [
             [['fio', 'email', 'phone', 'password'], 'required'],
             [['fio', 'email', 'phone', 'password'], 'string', 'max' => 255],
+            ['email', 'unique'],
+            ['phone', 'unique'],
             ['password', 'validatePassword'],
         ];
     }

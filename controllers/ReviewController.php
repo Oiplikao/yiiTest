@@ -6,13 +6,38 @@ namespace app\controllers;
 
 use app\models\City;
 use app\models\Review;
+use app\models\ReviewCreateForm;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
+use yii\helpers\Url;
+use yii\web\UploadedFile;
 
 class ReviewController extends \yii\web\Controller
 {
     const VIEWTYPE_CITY = 'city';
     const VIEWTYPE_ALL_CITY = 'all_city';
     const VIEWTYPE_USER = 'user';
+
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => ['create'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['create'],
+                        'roles' => ['@']
+                    ]
+                ],
+                'denyCallback' => function() {
+                    Url::remember();
+                    $this->redirect(['site/login']);
+                }
+            ]
+        ];
+    }
 
     public function actionIndexByCity()
     {
@@ -51,6 +76,37 @@ class ReviewController extends \yii\web\Controller
             'type' => $type,
             'provider' => $provider,
             'city' => $city
+        ]);
+    }
+
+    public function actionCreate()
+    {
+        $model = new ReviewCreateForm();
+        if($this->request->isPost) {
+            if($model->load($this->request->post()))
+            {
+                $model->img = UploadedFile::getInstance($model, 'img');
+                if($model->create()) {
+                    \Yii::$app->session->setFlash('success', 'Review created successfully');
+                    return $this->redirect(['review/index-by-city']);
+                }
+            }
+        }
+        $cityID = \Yii::$app->session->get('cityID');
+        if(!$cityID)
+        {
+            return $this->redirect(['site/city-choice']);
+        }
+        $city = City::findOne($cityID);
+        if(!$city)
+        {
+            return $this->redirect(['site/city-choice']);
+        }
+        return $this->render('create', [
+            'model' => $model,
+            'city' => $city,
+            'citySearchUrl' => Url::to(['city/city-search']),
+            'allCityID' => City::getAllCityID()
         ]);
     }
 }

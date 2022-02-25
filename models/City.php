@@ -30,9 +30,9 @@ class City extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name'], 'required'],
-            [['date_create'], 'safe'],
+            ['name', 'required'],
             [['name'], 'string', 'max' => 50],
+            ['name', 'unique']
         ];
     }
 

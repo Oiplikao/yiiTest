@@ -60,6 +60,7 @@ $config = [
     'on beforeRequest' => function($event) {
         //В 'aliases' @web ещё не существует
         Yii::setAlias('@upload', '@web/upload');
+        Yii::setAlias('@uploadroot', '@webroot/upload');
     }
 ];
 
