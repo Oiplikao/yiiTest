@@ -17,34 +17,50 @@ class UserController extends \yii\web\Controller
     {
         $model = new SignupForm();
         if($this->request->isPost) {
-            if(!ArrayHelper::getValue($this->request->post(), $model->formName() . '.emailCode') ) {
+            if(!ArrayHelper::getValue($this->request->post(), Html::getInputName($model, 'emailCode'))) {
                 $model->scenario = $model::SCENARIO_INFO;
-                if($model->load($this->request->post())
-                    //check info and send email code
-                    && $model->signupStep1())
+                if($model->load($this->request->post()))
                 {
-                    Yii::$app->session->set('emailCode', $model->serverEmailCode);
-                    //separate step to verify email code
-                    return $this->render('signup', [
-                        'model' => $model,
-                        'firstStep' => false
-                    ]);
+                    //ajax validation step 1
+                    if($this->request->isAjax)
+                    {
+                        Yii::$app->response->format = Response::FORMAT_JSON;
+                        return ActiveForm::validate($model, ['email', 'phone']);
+                    }
+                    //check info and send email code
+                    else if($model->signupStep1())
+                    {
+                        Yii::$app->session->set('emailCode', $model->serverEmailCode);
+                        //separate step to verify email code
+                        return $this->render('signup', [
+                            'model' => $model,
+                            'firstStep' => false
+                        ]);
+                    }
+
                 }
             } else {
-                $model->scenario = $model::SCENARIO_EMAIL_VERIFY;
-                $model->serverEmailCode = Yii::$app->session->get('emailCode');
-                if($model->load($this->request->post())
-                    //full verification - info and email code
-                    && $model->signupStep2())
-                {
-                    Yii::$app->user->login($model->user);
-                    return $this->redirect(['review/index-by-city']);
-                }/* else if($this->request->isAjax) //todo ajax
+                //ajax validation of email and phone
+                if($this->request->isAjax)
                 {
                     Yii::$app->response->format = Response::FORMAT_JSON;
-                    $result[Html::getInputId($model, 'emailCode')] = $model->getErrors('emailCode');
-                    return $result;
-                }*/
+                    return ActiveForm::validate($model, ['email', 'phone']);
+                }
+                $model->scenario = $model::SCENARIO_EMAIL_VERIFY;
+                $model->serverEmailCode = Yii::$app->session->get('emailCode');
+                if($model->load($this->request->post()))
+                {
+                    //ajax validation of email code
+                    if($this->request->isAjax) {
+                        Yii::$app->response->format = Response::FORMAT_JSON;
+                        return ActiveForm::validate($model, ['emailCode']);
+                    }
+                    //full verification - info and email code
+                    else if($model->signupStep2()) {
+                        Yii::$app->user->login($model->user);
+                        return $this->redirect(['review/index-by-city']);
+                    }
+                }
             }
         }
         return $this->render('signup', [

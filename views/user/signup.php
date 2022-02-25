@@ -7,15 +7,16 @@ use yii\bootstrap4\ActiveForm;
 
 $form = ActiveForm::begin([
     'id' => 'signup-form',
-    'options' => ['class' => 'form']
+    'options' => ['class' => 'form'],
+    'validateOnSubmit' => false
 ]);
 
 ?>
 <div class="user-signup">
 <?php if($firstStep) {
     echo $form->field($model, 'fio')
-        . $form->field($model, 'email')
-        . $form->field($model, 'phone')
+        . $form->field($model, 'email', ['enableAjaxValidation' => true])
+        . $form->field($model, 'phone', ['enableAjaxValidation' => true])
         . $form->field($model, 'password')->passwordInput()
         . $form->field($model, 'passwordRepeat')->passwordInput()
         . $form->field($model, 'captchaCode')->widget(\yii\captcha\Captcha::class, [
@@ -31,7 +32,7 @@ $form = ActiveForm::begin([
         echo \yii\bootstrap4\Html::activeHiddenInput($model, $attribute);
     }
 
-    echo $form->field($model, 'emailCode'/*, ['enableAjaxValidation' => true] //TODO ajax*/);
+    echo $form->field($model, 'emailCode', ['enableAjaxValidation' => true]);
 }
 echo \yii\bootstrap4\Html::submitButton('Отправить');
 $form::end();

@@ -49,7 +49,7 @@ AppAsset::register($this);
                 . Html::endForm()
                 . '</li>'
             ),
-            ['label' => 'Регистрация', 'url' => ['/site/register']],
+            ['label' => 'Регистрация', 'url' => ['/user/signup']],
             ['label' => 'Выбор города', 'url' => ['/site/city-choice']],
             ['label' => 'Создать отзыв', 'url' => ['/review/create']]
         ],
