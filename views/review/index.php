@@ -2,7 +2,7 @@
 
 /** @var yii\web\View $this */
 /** @var \yii\data\ActiveDataProvider $provider */
-/** @var \app\models\City $city */
+/** @var string $title */
 /** @var bool $isGuest */
 /** @var bool $showCity */
 
@@ -11,7 +11,7 @@ use yii\bootstrap4\Modal;
 
 const CITY_CELL_LIST_LIMIT = 3;
 
-$this->title = "Обзоры - {$city->name}";
+$this->title = "Обзоры - {$title}";
 ?>
 
 
@@ -68,7 +68,7 @@ $this->title = "Обзоры - {$city->name}";
                                     'phone'
                                 ]
                             ]);
-                            echo Html::a('Другие отзывы пользователя', \yii\helpers\Url::to(["/review/index-by-user/{$user->id}"]));
+                            echo Html::a('Другие отзывы пользователя', \yii\helpers\Url::to(["/review/index-by-user", 'userID' => $user->id]));
                         } else {
                             echo Html::tag('p', "Авторизуйтесь чтобы увидеть контактные данные и другие обзоры пользователя.");
                         }

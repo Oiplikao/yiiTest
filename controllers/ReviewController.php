@@ -7,6 +7,7 @@ namespace app\controllers;
 use app\models\City;
 use app\models\Review;
 use app\models\ReviewCreateForm;
+use app\models\User;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\helpers\Url;
@@ -14,9 +15,6 @@ use yii\web\UploadedFile;
 
 class ReviewController extends \yii\web\Controller
 {
-    const VIEWTYPE_CITY = 'city';
-    const VIEWTYPE_ALL_CITY = 'all_city';
-    const VIEWTYPE_USER = 'user';
 
     public function behaviors()
     {
@@ -67,10 +65,37 @@ class ReviewController extends \yii\web\Controller
             ]
         ]);
         return $this->render('index', [
+            'title' => $city->name,
             'provider' => $provider,
-            'city' => $city,
             'isGuest' => \Yii::$app->user->isGuest,
             'showCity' => false
+        ]);
+    }
+
+    public function actionIndexByUser(int $userID)
+    {
+        $user = User::findOne($userID);
+        if(!$user) {
+            return $this->redirect(['city/choice']);
+        }
+        $reviewsQuery = Review::find()->where(['user_id'=> $userID])->with('user', 'cities');
+        $provider = new ActiveDataProvider([
+            'query' => $reviewsQuery,
+            'pagination' => [
+                'pageSize' => 4
+            ],
+            'sort' => [
+                'defaultOrder' => [
+                    'date_create' => SORT_DESC,
+                    'title' => SORT_ASC
+                ]
+            ]
+        ]);
+        return $this->render('index', [
+            'title' => $user->fio,
+            'provider' => $provider,
+            'isGuest' => \Yii::$app->user->isGuest,
+            'showCity' => true
         ]);
     }
 

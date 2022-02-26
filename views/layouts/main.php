@@ -51,7 +51,8 @@ AppAsset::register($this);
             ),
             ['label' => 'Регистрация', 'url' => ['/user/signup']],
             ['label' => 'Выбор города', 'url' => ['city/choice']],
-            ['label' => 'Создать отзыв', 'url' => ['/review/create']]
+            ['label' => 'Создать отзыв', 'url' => ['/review/create']],
+            ['label' => 'Список отзывов', 'url' => ['review/index-by-city']]
         ],
     ]);
     NavBar::end();
