@@ -48,6 +48,12 @@ class City extends \yii\db\ActiveRecord
         ];
     }
 
+    //intended to be used in getReviewsIncludingShared
+    public function getCombinedID()
+    {
+        return [$this->id, static::getAllCityID()];
+    }
+
     /**
      * Gets query for [[Reviews]].
      *
@@ -56,6 +62,11 @@ class City extends \yii\db\ActiveRecord
     public function getReviews()
     {
         return $this->hasMany(Review::className(), ['id' => 'review_id'])->viaTable('cities2reviews', ['city_id' => 'id']);
+    }
+
+    public function getReviewsIncludingShared()
+    {
+        return $this->hasMany(Review::className(), ['id' => 'review_id'])->viaTable('cities2reviews', ['city_id' => 'combinedId']);
     }
 
     public static function getAllCity()

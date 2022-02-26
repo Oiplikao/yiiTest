@@ -43,23 +43,18 @@ class ReviewController extends \yii\web\Controller
     {
         //todo cityID check can be moved to AccessControl
         $cityID = \Yii::$app->session->get('cityID');
-        if(!$cityID)
+        if(!$cityID || $cityID == City::getAllCityID())
         {
             //session ran out or direct access without chosen city
+            //also dont show all city reviews
             $this->redirect(["site/city-choice"]);
         }
         $city = City::findOne($cityID);
         if(!$city) {
-            //incorrect ID, should log
+            //incorrect ID todo log this
             return $this->redirect(["site/city-choice"]);
         }
-        if($cityID == City::getAllCityID()) {
-            $type = self::VIEWTYPE_ALL_CITY;
-            $reviewsQuery = Review::find(); //all reviews
-        } else {
-            $type = self::VIEWTYPE_CITY;
-            $reviewsQuery = $city->getReviews()->with('user');
-        }
+        $reviewsQuery = $city->getReviewsIncludingShared()->with('user');
         $provider = new ActiveDataProvider([
             'query' => $reviewsQuery,
             'pagination' => [
@@ -73,11 +68,10 @@ class ReviewController extends \yii\web\Controller
             ]
         ]);
         return $this->render('index', [
-            //TODO instead of types add booleans like "showUsername => true"
-            'type' => $type,
             'provider' => $provider,
             'city' => $city,
-            'isGuest' => \Yii::$app->user->isGuest
+            'isGuest' => \Yii::$app->user->isGuest,
+            'showCity' => false
         ]);
     }
 

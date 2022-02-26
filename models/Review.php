@@ -56,6 +56,8 @@ class Review extends \yii\db\ActiveRecord
             'rating' => 'Rating',
             'img' => 'Img',
             'user_id' => 'User ID',
+            'user' => 'User',
+            'cities' => 'Cities',
             'date_create' => 'Date Create',
         ];
     }
@@ -67,7 +69,7 @@ class Review extends \yii\db\ActiveRecord
      */
     public function getCities()
     {
-        return $this->hasMany(City::className(), ['id' => 'city_id'])->viaTable('cities2reviews', ['review_id' => 'id']);
+        return $this->hasMany(City::class, ['id' => 'city_id'])->viaTable('cities2reviews', ['review_id' => 'id']);
     }
 
     public function getUser()
