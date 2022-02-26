@@ -38,10 +38,10 @@ AppAsset::register($this);
         'options' => ['class' => 'navbar-nav'],
         'items' => [
             Yii::$app->user->isGuest ? (
-                ['label' => 'Вход', 'url' => ['/site/login']]
+                ['label' => 'Вход', 'url' => ['/user/login']]
             ) : (
                 '<li>'
-                . Html::beginForm(['/site/logout'], 'post', ['class' => 'form-inline'])
+                . Html::beginForm(['/user/logout'], 'post', ['class' => 'form-inline'])
                 . Html::submitButton(
                     'Выход (' . Yii::$app->user->identity->fio . ')',
                     ['class' => 'btn btn-link logout']

@@ -33,7 +33,7 @@ class ReviewController extends \yii\web\Controller
                 ],
                 'denyCallback' => function() {
                     Url::remember();
-                    $this->redirect(['site/login']);
+                    $this->redirect(['user/login']);
                 }
             ]
         ];
