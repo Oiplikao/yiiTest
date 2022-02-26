@@ -17,7 +17,7 @@ $this->title = 'Выбор город';
 
         <p class="lead">Это ваш город?</p>
 
-        <?= Html::beginForm(['/site/city-choice'], 'post')
+        <?= Html::beginForm()
             . Html::hiddenInput('type', 'name')
             . Html::submitButton(
                 Html::encode($cityFromIP->name),
@@ -30,7 +30,7 @@ $this->title = 'Выбор город';
             . Html::submitButton(
             Html::encode('Фальшивый город - проверка валидации названия'),
             [
-                'class' => 'btn btn-danger m-3 ',
+                'class' => 'btn btn-danger m-3',
                 'name' => 'cityName',
                 'value' => 'Фальшивый город'
             ])
@@ -42,7 +42,7 @@ $this->title = 'Выбор город';
     </div>
 
     <?php } ?>
-    <?= Html::beginForm(['/site/city-choice'], 'post') ?>
+    <?= Html::beginForm() ?>
     <p class="lead text-center">Выберите город</p>
     <div class="list-group">
         <?php

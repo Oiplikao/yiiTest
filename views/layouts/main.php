@@ -50,7 +50,7 @@ AppAsset::register($this);
                 . '</li>'
             ),
             ['label' => 'Регистрация', 'url' => ['/user/signup']],
-            ['label' => 'Выбор города', 'url' => ['/site/city-choice']],
+            ['label' => 'Выбор города', 'url' => ['city/choice']],
             ['label' => 'Создать отзыв', 'url' => ['/review/create']]
         ],
     ]);

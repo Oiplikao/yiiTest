@@ -2,15 +2,11 @@
 
 namespace app\controllers;
 
-use app\custom\cityFinder\CityFinderStub;
-use app\models\City;
-use app\models\CityChoiceForm;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
-use app\models\LoginForm;
 use app\models\ContactForm;
 
 class SiteController extends Controller
@@ -93,36 +89,6 @@ class SiteController extends Controller
     public function actionAbout()
     {
         return $this->render('about');
-    }
-
-    public function actionCityChoice()
-    {
-        $form = new CityChoiceForm();
-        if($this->request->isPost)
-        {
-            $cityFindType = $this->request->post('type');
-            $findScenarios = [
-                'name' => $form::SCENARIO_FIND_BY_NAME,
-                'id' => $form::SCENARIO_FIND_BY_ID
-            ];
-            $scenario = $findScenarios[$cityFindType];
-            if($scenario)
-            {
-                $form->scenario = $scenario;
-                if($form->load(Yii::$app->request->post(), '') && $form->validate()) {
-                    Yii::$app->session->set('cityID', $form->cityID);
-                    return $this->redirect(['review/index-by-city']);
-                }
-            }
-        }
-        $models = City::find()->all();
-        $cityFinder = new CityFinderStub();
-        $cityFromIP = $cityFinder->findCityByIP($this->request->getUserIP());
-        return $this->render('citychoice', [
-            'form' => $form,
-            'models' => $models,
-            'cityFromIP' => $cityFromIP
-        ]);
     }
 
     public function actionTest()

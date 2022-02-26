@@ -23,11 +23,10 @@ class ReviewController extends \yii\web\Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['create'],
+                'only' => ['create', 'index-by-user'],
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['create'],
                         'roles' => ['@']
                     ]
                 ],
@@ -47,12 +46,12 @@ class ReviewController extends \yii\web\Controller
         {
             //session ran out or direct access without chosen city
             //also dont show all city reviews
-            $this->redirect(["site/city-choice"]);
+            $this->redirect(["city/choice"]);
         }
         $city = City::findOne($cityID);
         if(!$city) {
             //incorrect ID todo log this
-            return $this->redirect(["site/city-choice"]);
+            return $this->redirect(["city/choice"]);
         }
         $reviewsQuery = $city->getReviewsIncludingShared()->with('user');
         $provider = new ActiveDataProvider([
@@ -91,12 +90,12 @@ class ReviewController extends \yii\web\Controller
         $cityID = \Yii::$app->session->get('cityID');
         if(!$cityID)
         {
-            return $this->redirect(['site/city-choice']);
+            return $this->redirect(['city/choice']);
         }
         $city = City::findOne($cityID);
         if(!$city)
         {
-            return $this->redirect(['site/city-choice']);
+            return $this->redirect(['city/choice']);
         }
         return $this->render('create', [
             'model' => $model,
