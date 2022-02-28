@@ -1,9 +1,9 @@
 <?php
 
 /** @var yii\web\View $this */
-/** @var \app\models\CityChoiceForm $form */
+/** @var \app\models\CityFindForm $form */
 /** @var \app\models\City[] $models */
-/** @var \app\custom\cityFinder\CityData $cityFromIP */
+/** @var \app\models\City|null $cityFromIP */
 
 use yii\bootstrap4\Html;
 
@@ -18,22 +18,14 @@ $this->title = 'Выбор город';
         <p class="lead">Это ваш город?</p>
 
         <?= Html::beginForm()
-            . Html::hiddenInput('type', 'name')
             . Html::submitButton(
                 Html::encode($cityFromIP->name),
                 [
                     'class' => 'btn btn-lg btn-success m-3',
-                    'name' => 'cityName',
-                    'value' => Html::encode($cityFromIP->name)
+                    'name' => 'cityID',
+                    'value' => Html::encode($cityFromIP->id)
                 ]
             )
-            . Html::submitButton(
-            Html::encode('Фальшивый город - проверка валидации названия'),
-            [
-                'class' => 'btn btn-danger m-3',
-                'name' => 'cityName',
-                'value' => 'Фальшивый город'
-            ])
             . Html::endForm()
         ?>
 
