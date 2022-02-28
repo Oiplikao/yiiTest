@@ -25,7 +25,7 @@ class CityController extends \yii\web\Controller
         if($this->request->isPost)
         {
             $cityID = $this->request->post('cityID');
-            if($cityID) {
+            if($cityID && $cityID !== City::getAllCityID()) {
                 $city = $form->findByID((int)$this->request->post('cityID'));
                 if($city) {
                     Yii::$app->session->set('cityID', $city->id);
