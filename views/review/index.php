@@ -65,7 +65,7 @@ $getReviewActionDropdownItems = function($model)
             'rating',
             [
                 'attribute' => 'imageLink',
-                'format' => 'image'
+                'format' => ['image', ['class' => 'img-fluid']]
             ],
             [
                 'format' => 'raw',
