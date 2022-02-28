@@ -1,9 +1,10 @@
 <?php
 /** @var \yii\web\View $this */
-/** @var \app\models\Review $model */
-/** @var \app\models\City $city */
+/** @var \app\models\ReviewCreateForm $model */
+/** @var \app\models\City $cities */
 /** @var string $citySearchUrl */
 /** @var int $allCityID */
+/** @var int $id */
 
 ?>
 
@@ -82,10 +83,14 @@ JS)
             ?>
         </div>
         <div class="row mt-3" id="city-item-list">
+            <?php
+            foreach($cities as $city) {
+            ?>
             <div class="city-item" id="city-item-<?= $city->id ?>">
                 <input type="hidden" name="<?= \yii\helpers\Html::getInputName($model, 'cityIDs') ?>[]" value="<?= $city->id ?>">
                 <button type="button" class="btn btn-outline-primary"><?= $city->name ?></button>
             </div>
+            <?php } ?>
         </div>
     </div>
     <?php

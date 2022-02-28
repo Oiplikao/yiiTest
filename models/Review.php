@@ -85,4 +85,37 @@ class Review extends \yii\db\ActiveRecord
         }
         return Yii::getAlias('@upload') . '/' . $this->img;
     }
+
+    public function unlinkImage($save = true)
+    {
+        if(!$this->img) {
+            return true;
+        }
+        $this->unlinkImageByID($this->img);
+        $this->img = null;
+        return $save ? $this->save() : true;
+    }
+
+    protected function unlinkImageByID($id)
+    {
+        $imagePath = Yii::getAlias("@uploadroot/{$id}");
+        if(file_exists($imagePath) && !unlink($imagePath)) {
+            //file exists but cant be deleted
+            return false;
+        }
+        return true;
+    }
+
+    public function afterSave($insert, $changedAttributes)
+    {
+        //deletes old image
+        if(!$insert && isset($changedAttributes['img'])) {
+            $oldImageID = $changedAttributes['img'];
+            if($oldImageID) {
+                $this->unlinkImageByID($oldImageID);
+            }
+        }
+
+        parent::afterSave($insert, $changedAttributes);
+    }
 }

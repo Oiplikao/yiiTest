@@ -129,4 +129,28 @@ class ReviewController extends \yii\web\Controller
             'allCityID' => City::getAllCityID()
         ]);
     }
+
+    public function actionEdit(int $id)
+    {
+        $model = Review::findOne($id);
+        //todo implement auth manager
+        if(!$model && $model->user_id !== \Yii::$app->user->getId()) {
+            return $this->redirect(['review/index-by-city']);
+        }
+        $form = new ReviewCreateForm();
+        if($this->request->isPost && $form->load($this->request->post())) {
+            $form->img = UploadedFile::getInstance($form, 'img');
+            if($form->edit($id)) {
+                $this->redirect(['review/index-by-city']);
+            }
+        }
+        $form->attributes = $model->attributes;
+        $cities = $model->cities;
+        return $this->render('create', [
+            'model' => $form,
+            'cities' => $cities,
+            'citySearchUrl' => Url::to(['city/city-search']),
+            'allCityID' => City::getAllCityID()
+        ]);
+    }
 }
