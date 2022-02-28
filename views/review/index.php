@@ -12,6 +12,20 @@ use yii\bootstrap4\Modal;
 const CITY_CELL_LIST_LIMIT = 3;
 
 $this->title = "Обзоры - {$title}";
+
+/** @param \app\models\Review $model */
+$getReviewActionDropdownItems = function($model)
+{
+    $items = [];
+    if($model->user->id == Yii::$app->user->getId()) {
+        $items[] = [
+            'label' => 'Редактировать',
+            'url' => ['review/edit', 'id' => $model->id]
+        ];
+    }
+    return $items;
+};
+
 ?>
 
 
@@ -98,7 +112,28 @@ $this->title = "Обзоры - {$title}";
                     echo Html::endTag('ul');
                 });
             }
-        ] ] : [])
+        ] ] : [],
+        [ [
+            'header' => '',
+            'content' => function($model, $key) use ($getReviewActionDropdownItems) {
+                $items = $getReviewActionDropdownItems($model);
+                ob_start();
+                echo \yii\bootstrap4\Button::widget([
+                    'label' => 'Действия',
+                    'options' => array_merge([
+                        'class' => 'btn-secondary dropdown-toggle',
+                        'type' => 'button',
+                        'data-toggle' => 'dropdown',
+                        'data-target' => "review-actions-dropdown-$key"
+                    ],
+                    empty($items) ? ['disabled' => 'disabled'] : [])
+                ]);
+                echo \yii\bootstrap4\Dropdown::widget([
+                    'items' => $items
+                ]);
+                return ob_get_clean();
+            }
+        ] ])
     ])
 
     ?>
