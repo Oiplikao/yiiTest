@@ -75,7 +75,7 @@ class ReviewCreateForm extends \yii\base\Model
         $review = Review::findOne($id);
         $oldCities = $review->cities;
         $this->fillData($review);
-        if(true/*$review->save()*/) {
+        if($review->save()) {
             //todo only add/remove diff instead of total rewrite
             foreach ($oldCities as $city) {
                 $review->unlink('cities', $city, true);
