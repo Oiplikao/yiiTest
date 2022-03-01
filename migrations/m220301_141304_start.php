@@ -28,6 +28,10 @@ class m220301_141304_start extends Migration
             'date_create' => $this->dateTime()->defaultExpression('current_timestamp()'),
         ]);
 
+        $this->insert('cities', [
+            'name' => 'Все города'
+        ]);
+
         $this->createTable('{{%reviews}}', [
             'id' => $this->primaryKey(),
             'title' => $this->string(100),
