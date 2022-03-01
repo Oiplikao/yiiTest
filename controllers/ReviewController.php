@@ -51,7 +51,7 @@ class ReviewController extends \yii\web\Controller
             //incorrect ID todo log this
             return $this->redirect(["city/choice"]);
         }
-        $reviewsQuery = $city->getReviewsIncludingShared()->with('user');
+        $reviewsQuery = $city->getReviewsIncludingShared()->cache()->with('user');
         $provider = new ActiveDataProvider([
             'query' => $reviewsQuery,
             'pagination' => [
@@ -78,7 +78,7 @@ class ReviewController extends \yii\web\Controller
         if(!$user) {
             return $this->redirect(['city/choice']);
         }
-        $reviewsQuery = Review::find()->where(['user_id'=> $userID])->with('user', 'cities');
+        $reviewsQuery = Review::find()->cache()->where(['user_id'=> $userID])->with('user', 'cities');
         $provider = new ActiveDataProvider([
             'query' => $reviewsQuery,
             'pagination' => [
