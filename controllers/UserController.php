@@ -66,6 +66,7 @@ class UserController extends \yii\web\Controller
                     else if($model->signupStep1())
                     {
                         Yii::$app->session->set('emailCode', $model->serverEmailCode);
+                        Yii::$app->session->set('email', $model->email);
                         //separate step to verify email code
                         return $this->render('signup', [
                             'model' => $model,
@@ -85,6 +86,7 @@ class UserController extends \yii\web\Controller
                 $model->serverEmailCode = Yii::$app->session->get('emailCode');
                 if($model->load($this->request->post()))
                 {
+                    $model->email = Yii::$app->session->get('email');
                     //ajax validation of email code
                     if($this->request->isAjax) {
                         Yii::$app->response->format = Response::FORMAT_JSON;

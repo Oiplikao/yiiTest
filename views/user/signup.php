@@ -25,7 +25,6 @@ $form = ActiveForm::begin([
  } else {
     foreach(
         ['fio',
-        'email',
         'phone',
         'password'
         ] as $attribute) {
