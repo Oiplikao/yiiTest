@@ -124,7 +124,7 @@ class ReviewController extends \yii\web\Controller
         }
         return $this->render('create', [
             'model' => $model,
-            'city' => $city,
+            'cities' => [$city],
             'citySearchUrl' => Url::to(['city/city-search']),
             'allCityID' => City::getAllCityID()
         ]);
