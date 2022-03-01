@@ -21,25 +21,7 @@ class SignupForm extends \yii\base\Model
     public $passwordRepeat;
     public $captchaCode;
 
-    public $serverEmailCode;
-    public $emailCode;
-
     public $user;
-
-    const SCENARIO_INFO = 'info';
-    const SCENARIO_EMAIL_VERIFY = 'email_verify';
-
-    public function scenarios()
-    {
-        $scenarios = parent::scenarios();
-        $scenarios[self::SCENARIO_INFO] = [
-            'fio', 'email', 'phone', 'password', 'passwordRepeat', 'captchaCode'
-        ];
-        $scenarios[self::SCENARIO_EMAIL_VERIFY] = [
-            'fio', 'email', 'phone', 'password', 'emailCode', '!serverEmailCode'
-        ];
-        return $scenarios;
-    }
 
     /**
      * {@inheritdoc}
@@ -47,11 +29,6 @@ class SignupForm extends \yii\base\Model
     public function rules()
     {
         return [
-
-            ['serverEmailCode', 'required'],
-            ['emailCode', 'required'],
-            ['emailCode', 'compare', 'compareAttribute' => 'serverEmailCode'],
-
             ['fio', 'trim'],
             ['fio', 'required'],
             ['fio', 'string', 'min' => 2, 'max' => 50],
@@ -78,39 +55,32 @@ class SignupForm extends \yii\base\Model
         ];
     }
 
-    public function signupStep1()
+    public function signUp()
     {
-        if(!$this->validate())
-        {
-            return null;
+        if(!$this->validate()) {
+            return false;
         }
-        $this->serverEmailCode = Yii::$app->security->generateRandomString(5);
-        if($this->sendEmail())
-        {
-            return true;
-        }
-        return null;
+
+        return ($user = $this->createUser()) && $this->sendEmail($user);
     }
 
-    /**
-     * Signs user up.
-     *
-     * @return bool whether the creating new account was successful and email was sent
-     */
-    public function signupStep2()
+    protected function createUser()
     {
-        if (!$this->validate()) {
-            return null;
-        }
-
         $user = new User();
         $user->fio = $this->fio;
         $user->email = $this->email;
         $user->phone = $this->phone;
         $user->setPasswordSecure($this->password);
+        return $user->save() ? $user : null;
+    }
 
-        $this->user = $user;
-
+    public function verify(User $user, string $code)
+    {
+        if($code !== $this->getEmailHash($user))
+        {
+            return false;
+        }
+        $user->email_verified = true;
         return $user->save();
     }
 
@@ -120,17 +90,28 @@ class SignupForm extends \yii\base\Model
      * @param string $code
      * @return bool whether the email was sent
      */
-    protected function sendEmail()
+    protected function sendEmail(User $user)
     {
         return Yii::$app
             ->mailer
             ->compose(
                 'emailVerify-html',
-                ['code' => $this->serverEmailCode, 'fio' => $this->fio]
+                ['url' => \yii\helpers\Url::to(['user/verify', 'hash' => $this->getEmailHash($user), 'id' => $user->id], true), 'fio' => $this->fio]
             )
             ->setFrom([Yii::$app->params['senderEmail'] => Yii::$app->name . ' robot'])
             ->setTo($this->email)
             ->setSubject('Account registration at ' . Yii::$app->name)
             ->send();
+    }
+
+    protected function getCryptoKey()
+    {
+        //fixme testdata
+        return '123123123123';
+    }
+
+    protected function getEmailHash(User $user)
+    {
+        return hash_hmac('sha1', $user->email, $this->getCryptoKey());
     }
 }

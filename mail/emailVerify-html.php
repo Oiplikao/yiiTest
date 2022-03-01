@@ -3,11 +3,11 @@
 use yii\bootstrap4\Html;
 
 /** @var string $fio */
-/** @var string $code */
+/** @var string $url */
 
 ?>
 <div class="verify-email">
     <p>Hello <?= Html::encode($fio) ?>,</p>
 
-    <p><?= Html::encode($code) ?></p>
+    <a href="<?= $url ?>">Ссылка для подтверждения регистрации</a>
 </div>

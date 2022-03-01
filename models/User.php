@@ -15,6 +15,7 @@ use yii\helpers\ArrayHelper;
  * @property string $phone
  * @property \DateTime $date_create
  * @property string $password
+ * @property string $email_verified
  */
 class User extends ActiveRecord implements \yii\web\IdentityInterface
 {
